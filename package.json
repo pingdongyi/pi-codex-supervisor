@@ -1,0 +1,8 @@
+{
+  "name": "pi-codex-supervisor",
+  "version": "1.0.0",
+  "description": "Automated Codex session supervisor: a state-machine watchdog that auto-continues idle tasks, pauses on low rate limits, notifies on limit change/restore, and self-restarts via Termux boot. Replaces codex_watch.sh + limit_watch.sh + notify.sh. Scheduling uses Termux only (termux-job-scheduler).",
+  "keywords": ["pi-package", "pi", "codex", "supervisor", "watchdog", "tmux", "rate-limit", "notification", "termux"],
+  "license": "MIT",
+  "files": ["codex-supervisor.sh", "setup.sh", "test.sh", "notify.sh", "README.md", "LICENSE"]
+}

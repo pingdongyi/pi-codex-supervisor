@@ -1,0 +1,6 @@
+# 生成物 (由 setup.sh 生成, 不入库)
+start.sh
+
+# 运行期状态/日志
+*.log
+*.state
