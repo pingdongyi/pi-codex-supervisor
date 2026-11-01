@@ -11,11 +11,11 @@
 
 | 问题 | 原方案 | 本方案 |
 |------|--------|--------|
-| 推进任务 (空闲时自动 continue) | codex_watch.sh 需外部周期驱动 | 常驻 daemon 每 5 分钟自动检查 |
+| 推进任务 (空闲时自动 continue) | codex_watch.sh 需外部周期驱动 | termux-job-scheduler 定期任务每 1 小时检查 |
 | 低限额暂停 + 通知 | codex_watch.sh (去重在 /tmp) | 状态机 + 持久化去重 |
 | 限额恢复检测 | limit_watch.sh 需手动跑 | 同一守护自动检测并恢复 |
 | 恢复通知 + 恢复推进 | 依赖外部重建 | 同一轮自动恢复推进 |
-| 开机恢复 | 无 | profile.d 启动恢复 (自动重启) |
+| 开机恢复 | 无 | profile.d 启动恢复 (确保 job 注册) |
 
 ## 状态机
 
@@ -35,8 +35,8 @@ ACTIVE ──(限额将尽)──▶ LOW_LIMIT ──(限额恢复)──▶ RES
 # 单次检查 (适合手动调试 / 外部 cron)
 ./codex-supervisor.sh --once
 
-# 常驻守护 (默认)
-./codex-supervisor.sh --daemon --interval 300
+# 定期任务: 由 termux-job-scheduler 触发, 每次跑一次 --once (见 setup.sh)
+./setup.sh 3600    # 注册每 1 小时跑一次的定期任务
 
 # 只打印决策, 不实际发送指令/通知 (调试用)
 ./codex-supervisor.sh --once --dry-run
@@ -51,19 +51,19 @@ pi install git:github.com/pingdongyi/pi-codex-supervisor
 ```
 
 克隆到 `~/.pi/agent/git/github.com/pingdongyi/pi-codex-supervisor/`，skill 自动发现；
-随后在克隆目录运行 `./setup.sh [interval]` 注册守护 + 应用启动恢复。
+随后在克隆目录运行 `./setup.sh [interval]` 注册定期任务 + 应用启动恢复。
 
 ## 安装 (Termux 调度 + 应用启动恢复)
 
 ```bash
-./setup.sh            # 默认 300s 间隔
-./setup.sh 600        # 指定 600s 间隔
+./setup.sh            # 默认 3600s 间隔 (1 小时)
+./setup.sh 1800       # 指定 30 分钟间隔
 ```
 
-- 通过 **`termux-job-scheduler --job-id 2`** 注册守护启动（Termux 定时任务）。
+- 通过 **`termux-job-scheduler --job-id 2 --period-ms`** 注册**周期性**定期任务（Termux 定时任务）。每次触发运行 `--once` 检查后退出（**非常驻守护**）。
 - **应用启动恢复**：安装 `~/.termux/boot/codex-supervisor.sh`，由
   **`$PREFIX/etc/profile.d/90-run-boot.sh`**（Termux 内置基础设施）在应用每次启动时
-  自动运行——检查 pidfile 存活、幂等。**无需 Termux:Boot 应用**。
+  自动运行——幂等地**重新注册定期任务**。**无需 Termux:Boot 应用**。
 
 ## 测试
 
