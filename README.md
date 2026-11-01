@@ -44,6 +44,15 @@ ACTIVE ──(限额将尽)──▶ LOW_LIMIT ──(限额恢复)──▶ RES
 
 参数：`--host` `--win` `--interval` `--weekly-max` `--h5-min` `--notify`。
 
+## 作为 Pi 插件安装
+
+```bash
+pi install git:github.com/pingdongyi/pi-codex-supervisor
+```
+
+克隆到 `~/.pi/agent/git/github.com/pingdongyi/pi-codex-supervisor/`，skill 自动发现；
+随后在克隆目录运行 `./setup.sh [interval]` 注册守护 + 应用启动恢复。
+
 ## 安装 (Termux 调度 + 应用启动恢复)
 
 ```bash
