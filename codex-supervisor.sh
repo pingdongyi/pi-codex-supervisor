@@ -146,6 +146,7 @@ run_cycle() {
   # 限额完全无法提取 (Codex 界面不在/解析失败): 不误判恢复, 不推进
   if [ -z "$weekly" ] && [ -z "$h5" ]; then
     state_set last_state UNKNOWN
+    log "LIMIT_UNKNOWN: 无法提取限额 (weekly/h5 为空, Codex 会话可能不可用)"
     echo "LIMIT_UNKNOWN: 无法提取限额 (weekly/h5 为空, Codex 会话可能不可用)"
     return 0
   fi
