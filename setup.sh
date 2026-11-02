@@ -35,7 +35,7 @@ chmod +x "$START"
 # 注册周期性 job (幂等覆盖同 job-id)
 termux-job-scheduler --job-id "$JOB_ID" --cancel >/dev/null 2>&1 || true
 termux-job-scheduler --job-id "$JOB_ID" --period-ms "$PERIOD_MS" --persisted true \
-  --network none --battery-not-low false --script "$START" >/dev/null 2>&1 \
+  --network any --battery-not-low false --script "$START" >/dev/null 2>&1 \
   && echo "[ok] 已注册定期任务 job #$JOB_ID (每 $((PERIOD_MS/1000))s 跑一次 --once)" \
   || echo "[warn] termux-job-scheduler 注册失败"
 
@@ -47,7 +47,7 @@ cat > "$BOOT_DIR/codex-supervisor.sh" <<BOOT
 # Ensure codex-supervisor periodic job is registered. Invoked by $BOOT_RUNNER.
 set -uo pipefail
 termux-job-scheduler --job-id $JOB_ID --period-ms $PERIOD_MS --persisted true \
-  --network none --battery-not-low false --script "$START" >/dev/null 2>&1 || true
+  --network any --battery-not-low false --script "$START" >/dev/null 2>&1 || true
 BOOT
 chmod +x "$BOOT_DIR/codex-supervisor.sh"
 echo "[ok] 已安装应用启动恢复 (重新注册 job #$JOB_ID): $BOOT_DIR/codex-supervisor.sh"
